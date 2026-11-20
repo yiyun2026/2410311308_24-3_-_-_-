@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}课程信息{% endblock %}
+{% block body %}
+<h1>课程信息</h1>
+{% if current_role == '管理员' %}
+<div class="card"><a class="btn" href="{{ url_for('course_new') }}">新增课程</a></div>
+{% endif %}
+<table>
+  <tr><th>课程号</th><th>课程名称</th><th>学分</th><th>学期</th><th>授课教师</th><th>操作</th></tr>
+  {% for r in rows %}
+  <tr>
+    <td>{{ r.course_no }}</td><td>{{ r.course_name }}</td>
+    <td>{{ r.credit }}</td><td>{{ r.term or '' }}</td><td>{{ r.teacher_name or '' }}</td>
+    <td>
+      <a class="btn small" href="{{ url_for('score_list', course=r.course_no) }}">成绩</a>
+      {% if current_role == '管理员' %}
+      <a class="btn small gray" href="{{ url_for('course_edit', course_no=r.course_no) }}">编辑</a>
+      <form class="inline" method="post" action="{{ url_for('course_delete', course_no=r.course_no) }}"
+            onsubmit="return confirm('确认删除课程 {{ r.course_no }}？');">
+        <button class="btn small red" type="submit">删除</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% else %}
+  <tr><td colspan="6" class="center muted">暂无课程</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

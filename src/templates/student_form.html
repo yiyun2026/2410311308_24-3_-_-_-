@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ '新增学生' if is_new else '编辑学生' }}{% endblock %}
+{% block body %}
+<h1>{{ '新增学生档案' if is_new else '编辑学生档案' }}</h1>
+<form method="post">
+<div class="card">
+  <div class="row">
+    <div class="field"><label>学号 *</label>
+      <input type="text" name="student_no" value="{{ row.student_no if row else '' }}"
+             {% if not is_new %}readonly{% endif %} required></div>
+    <div class="field"><label>姓名 *</label>
+      <input type="text" name="name" value="{{ row.name if row else '' }}" required></div>
+    <div class="field"><label>性别</label>
+      <select name="sex">
+        <option value="男" {% if row and row.sex == '男' %}selected{% endif %}>男</option>
+        <option value="女" {% if row and row.sex == '女' %}selected{% endif %}>女</option>
+      </select></div>
+    <div class="field"><label>出生日期</label>
+      <input type="date" name="birthday" value="{{ row.birthday if row else '' }}"></div>
+  </div>
+  <div class="row">
+    <div class="field"><label>班级 *</label>
+      <input type="text" name="class_name" value="{{ row.class_name if row else '' }}"
+             placeholder="如 24计科3" required></div>
+    <div class="field"><label>联系电话</label>
+      <input type="text" name="phone" value="{{ row.phone if row else '' }}"></div>
+  </div>
+  <h2>入学成绩</h2>
+  <div class="row">
+    <div class="field"><label>总分</label>
+      <input type="number" step="0.5" name="enroll_total" value="{{ row.enroll_total if row else 0 }}"></div>
+    <div class="field"><label>语文</label>
+      <input type="number" step="0.5" name="enroll_chinese" value="{{ row.enroll_chinese if row else 0 }}"></div>
+    <div class="field"><label>数学</label>
+      <input type="number" step="0.5" name="enroll_math" value="{{ row.enroll_math if row else 0 }}"></div>
+    <div class="field"><label>英语</label>
+      <input type="number" step="0.5" name="enroll_english" value="{{ row.enroll_english if row else 0 }}"></div>
+  </div>
+  <button class="btn" type="submit">保存</button>
+  <a class="btn gray" href="{{ url_for('student_list') }}">返回</a>
+</div>
+</form>
+{% endblock %}

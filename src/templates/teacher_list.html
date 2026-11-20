@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}教师信息{% endblock %}
+{% block body %}
+<h1>教师信息</h1>
+<table>
+  <tr><th>工号</th><th>姓名</th><th>职称</th><th>操作</th></tr>
+  {% for r in rows %}
+  <tr>
+    <td>{{ r.teacher_no }}</td><td>{{ r.name }}</td><td>{{ r.title or '' }}</td>
+    <td>
+      <form class="inline" method="post" action="{{ url_for('teacher_delete', teacher_no=r.teacher_no) }}"
+            onsubmit="return confirm('确认删除教师 {{ r.name }}？');">
+        <button class="btn small red" type="submit">删除</button>
+      </form>
+    </td>
+  </tr>
+  {% else %}
+  <tr><td colspan="4" class="center muted">暂无教师</td></tr>
+  {% endfor %}
+</table>
+<form method="post" class="row" style="margin-top:12px;">
+  <div class="field"><label>工号</label><input type="text" name="teacher_no" required></div>
+  <div class="field"><label>姓名</label><input type="text" name="name" required></div>
+  <div class="field"><label>职称</label><input type="text" name="title" placeholder="如 讲师"></div>
+  <button class="btn" type="submit">添加教师</button>
+</form>
+{% endblock %}

@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}成绩维护{% endblock %}
+{% block body %}
+<h1>成绩维护</h1>
+
+<div class="card">
+  <form method="get" class="row">
+    <div class="field"><label>课程</label>
+      <select name="course" onchange="this.form.submit()">
+        <option value="">全部课程</option>
+        {% for c in courses %}
+        <option value="{{ c.course_no }}" {% if c.course_no == course_no %}selected{% endif %}>
+          {{ c.course_no }} {{ c.course_name }}</option>
+        {% endfor %}
+      </select></div>
+    <div class="field"><label>班级</label>
+      <select name="cls">
+        <option value="">全部</option>
+        {% for c in classes %}
+        <option value="{{ c }}" {% if c == cls %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select></div>
+    <div class="field"><label>关键字</label>
+      <input type="text" name="kw" value="{{ kw }}" placeholder="学号或姓名"></div>
+    <button class="btn" type="submit">查询</button>
+    <a class="btn gray" href="{{ url_for('score_list') }}">重置</a>
+  </form>
+</div>
+
+{% if can_score and course_no %}
+<div class="card">
+  <h2 style="margin-top:0;">成绩操作</h2>
+  <div class="ops">
+    <form class="inline" method="post" action="{{ url_for('score_ops', op='calc') }}">
+      <input type="hidden" name="course_no" value="{{ course_no }}">
+      <button class="btn" type="submit">计算总评</button></form>
+    <form class="inline" method="post" action="{{ url_for('score_ops', op='save') }}">
+      <input type="hidden" name="course_no" value="{{ course_no }}">
+      <button class="btn" type="submit">保存</button></form>
+    <form class="inline" method="post" action="{{ url_for('score_ops', op='read') }}">
+      <input type="hidden" name="course_no" value="{{ course_no }}">
+      <button class="btn gray" type="submit">读入</button></form>
+    <form class="inline" method="post" action="{{ url_for('score_ops', op='sort') }}">
+      <input type="hidden" name="course_no" value="{{ course_no }}">
+      <button class="btn gray" type="submit">排序</button></form>
+    <form class="inline" method="post" action="{{ url_for('score_ops', op='index') }}">
+      <input type="hidden" name="course_no" value="{{ course_no }}">
+      <button class="btn gray" type="submit">索引</button></form>
+    <form class="inline" method="post" action="{{ url_for('score_ops', op='classify') }}">
+      <input type="hidden" name="course_no" value="{{ course_no }}">
+      <button class="btn gray" type="submit">分类统计</button></form>
+    <form class="inline" method="post" action="{{ url_for('score_ops', op='clear') }}"
+          onsubmit="return confirm('确认清空该课程的全部成绩？');">
+      <input type="hidden" name="course_no" value="{{ course_no }}">
+      <button class="btn red" type="submit">清空</button></form>
+    <form class="inline" method="post" action="{{ url_for('score_status_ops', op='publish') }}">
+      <input type="hidden" name="course_no" value="{{ course_no }}">
+      <button class="btn" type="submit">发布成绩</button></form>
+    <form class="inline" method="post" action="{{ url_for('score_status_ops', op='archive') }}"
+          onsubmit="return confirm('归档后该课程成绩将不能再修改，确认归档？');">
+      <input type="hidden" name="course_no" value="{{ course_no }}">
+      <button class="btn gray" type="submit">归档成绩</button></form>
+    <a class="btn gray" href="{{ url_for('score_export', course_no=course_no) }}">导出 CSV</a>
+  </div>
+  <form method="post" action="{{ url_for('score_ops', op='copy') }}" class="row" style="margin-top:12px;">
+    <input type="hidden" name="course_no" value="{{ course_no }}">
+    <div class="field"><label>拷贝到课程</label>
+      <select name="dst_course">
+        {% for c in courses %}
+        {% if c.course_no != course_no %}
+        <option value="{{ c.course_no }}">{{ c.course_no }} {{ c.course_name }}</option>
+        {% endif %}
+        {% endfor %}
+      </select></div>
+    <button class="btn gray" type="submit">拷贝成绩</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0;">成绩册初始化</h2>
+  <form method="post" action="{{ url_for('score_init') }}" class="row">
+    <input type="hidden" name="course_no" value="{{ course_no }}">
+    <div class="field"><label>班级</label>
+      <select name="class_name">
+        {% for c in classes %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+      </select></div>
+    <button class="btn" type="submit">按班级建成绩册</button>
+    <span class="muted">为所选班级全体学生建立空白成绩记录，已存在的记录会跳过</span>
+  </form>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0;">单条成绩录入</h2>
+  <form method="post" action="{{ url_for('score_input') }}" class="row">
+    <input type="hidden" name="course_no" value="{{ course_no }}">
+    <div class="field"><label>学号</label><input type="text" name="student_no" required></div>
+    <div class="field"><label>平时成绩</label>
+      <input type="number" step="0.5" min="0" max="100" name="usual" required></div>
+    <div class="field"><label>期末成绩</label>
+      <input type="number" step="0.5" min="0" max="100" name="final" required></div>
+    <button class="btn" type="submit">录入或更新</button>
+    <span class="muted">总评按平时 30%、期末 70% 计算</span>
+  </form>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0;">追加成绩，批量导入</h2>
+  <form method="post" action="{{ url_for('score_append') }}">
+    <p class="muted" style="margin-top:0;">每行一条，格式为 学号,课程号,平时成绩,期末成绩</p>
+    <textarea name="batch" rows="4" placeholder="2410311308,CS101,85,90"></textarea>
+    <div style="margin-top:8px;"><button class="btn" type="submit">批量追加</button></div>
+  </form>
+</div>
+{% endif %}
+
+<table>
+  <tr>
+    <th>学号</th><th>姓名</th><th>班级</th><th>课程</th><th>学分</th>
+    <th>平时</th><th>期末</th><th>总评</th><th>绩点</th><th>状态</th><th>操作</th>
+  </tr>
+  {% for r in rows %}
+  <tr>
+    <td>{{ r.student_no }}</td><td>{{ r.student_name }}</td><td>{{ r.class_name }}</td>
+    <td>{{ r.course_name }}</td><td>{{ r.credit }}</td>
+    <td>{{ r.usual_score }}</td><td>{{ r.final_score }}</td>
+    <td><strong>{{ r.total_score }}</strong></td><td>{{ r.gpa }}</td>
+    <td>{{ r.status or '' }}</td>
+    <td>
+      {% if can_score %}
+      <form class="inline" method="post"
+            action="{{ url_for('score_delete_one', student_no=r.student_no, course_no=r.course_no) }}"
+            onsubmit="return confirm('确认删除该成绩？');">
+        <button class="btn small red" type="submit">删除</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% else %}
+  <tr><td colspan="11" class="center muted">没有成绩记录</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

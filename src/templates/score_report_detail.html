@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}课程统计明细{% endblock %}
+{% block body %}
+<h1>{{ course.course_no }} {{ course.course_name }} 统计明细</h1>
+<div class="card">
+  <a class="btn gray" href="{{ url_for('score_report') }}">返回汇总</a>
+</div>
+<h2>按班级汇总</h2>
+<table>
+  <tr><th>班级</th><th>人数</th><th>平均分</th><th>最高分</th><th>最低分</th><th>及格率</th></tr>
+  {% for r in by_class %}
+  <tr>
+    <td>{{ r.class_name }}</td><td>{{ r.cnt }}</td><td>{{ r.avg_score }}</td>
+    <td>{{ r.max_score }}</td><td>{{ r.min_score }}</td>
+    <td>{{ (r.pass_cnt / r.cnt * 100)|round(1) }}%</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="6" class="center muted">没有数据</td></tr>
+  {% endfor %}
+</table>
+<h2>成绩明细</h2>
+<table>
+  <tr><th>学号</th><th>姓名</th><th>班级</th><th>平时</th><th>期末</th><th>总评</th><th>绩点</th></tr>
+  {% for r in rows %}
+  <tr>
+    <td>{{ r.student_no }}</td><td>{{ r.student_name }}</td><td>{{ r.class_name }}</td>
+    <td>{{ r.usual_score }}</td><td>{{ r.final_score }}</td><td>{{ r.total_score }}</td><td>{{ r.gpa }}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="7" class="center muted">没有成绩记录</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

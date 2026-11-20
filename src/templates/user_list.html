@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}用户管理{% endblock %}
+{% block body %}
+<h1>用户管理</h1>
+<table>
+  <tr><th>用户名</th><th>角色</th><th>关联编号</th><th>状态</th><th>操作</th></tr>
+  {% for r in rows %}
+  <tr>
+    <td>{{ r.user_name }}</td><td>{{ r.role }}</td>
+    <td>{{ r.related_no or '' }}</td><td>{{ r.status }}</td>
+    <td>
+      {% if r.user_name != current_user %}
+      <form class="inline" method="post" action="{{ url_for('user_delete', user_name=r.user_name) }}"
+            onsubmit="return confirm('确认删除用户 {{ r.user_name }}？');">
+        <button class="btn small red" type="submit">删除</button>
+      </form>
+      {% else %}
+      <span class="muted">当前账号</span>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h2>添加用户</h2>
+<form method="post" action="{{ url_for('user_new') }}" class="row">
+  <div class="field"><label>用户名</label><input type="text" name="user_name" required></div>
+  <div class="field"><label>密码</label><input type="password" name="password" required></div>
+  <div class="field"><label>角色</label>
+    <select name="role">
+      <option value="管理员">管理员</option>
+      <option value="教师">教师</option>
+      <option value="学生">学生</option>
+    </select></div>
+  <div class="field"><label>关联编号</label>
+    <input type="text" name="related_no" placeholder="学生填学号，教师填工号"></div>
+  <button class="btn" type="submit">添加</button>
+</form>
+{% endblock %}

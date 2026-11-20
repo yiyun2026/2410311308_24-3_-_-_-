@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}成绩排序{% endblock %}
+{% block body %}
+<h1>成绩排序</h1>
+<div class="card">
+  <strong>{{ course.course_no }} {{ course.course_name }}</strong>
+  <span class="muted">按总评成绩降序排列</span>
+  <a class="btn gray" href="{{ url_for('score_list', course=course.course_no) }}" style="float:right;">返回</a>
+</div>
+<table>
+  <tr><th>名次</th><th>学号</th><th>姓名</th><th>班级</th><th>总评</th><th>绩点</th></tr>
+  {% for r in rows %}
+  <tr>
+    <td>{{ loop.index }}</td><td>{{ r.student_no }}</td><td>{{ r.student_name }}</td>
+    <td>{{ r.class_name }}</td><td>{{ r.total_score }}</td><td>{{ r.gpa }}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="6" class="center muted">没有成绩记录</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

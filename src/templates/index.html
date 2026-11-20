@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}首页 - 学生成绩管理系统{% endblock %}
+{% block body %}
+<h1>系统总览</h1>
+<div class="stats">
+  <div class="stat"><div class="n">{{ stats.students }}</div><div class="t">学生档案</div></div>
+  <div class="stat"><div class="n">{{ stats.courses }}</div><div class="t">课程</div></div>
+  <div class="stat"><div class="n">{{ stats.scores }}</div><div class="t">成绩记录</div></div>
+  <div class="stat"><div class="n">{{ stats.teachers }}</div><div class="t">教师</div></div>
+</div>
+<div class="card" style="margin-top:16px;">
+  <h2 style="margin-top:0;">功能说明</h2>
+  <p class="muted" style="line-height:1.9;">
+    学生档案管理负责基本信息、入学成绩、家庭成员与职务信息的录入与查询。
+    成绩维护提供成绩册初始化、输入、显示、删除、查找、插入、追加、保存、读入、计算、拷贝、排序、索引、分类统计与清空共十五项操作。
+    综合查询统计按课程与班级两个维度汇总成绩。
+    用户管理支持添加用户、删除用户与修改密码。
+    备份与恢复用于数据库文件的备份与还原。
+  </p>
+</div>
+{% endblock %}

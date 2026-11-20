@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}备份与恢复{% endblock %}
+{% block body %}
+<h1>数据备份与恢复</h1>
+<div class="card">
+  <form method="post" action="{{ url_for('backup_now') }}" class="inline">
+    <button class="btn" type="submit">立即备份</button>
+  </form>
+  <span class="muted">把当前数据库文件完整复制到备份目录，并写入备份日志</span>
+</div>
+<table>
+  <tr><th>备份编号</th><th>备份时间</th><th>文件名</th><th>大小</th><th>操作人</th><th>结果</th><th>操作</th></tr>
+  {% for r in rows %}
+  <tr>
+    <td>{{ r.backup_no }}</td><td>{{ r.backup_time }}</td><td>{{ r.file_name }}</td>
+    <td>{{ (r.file_size / 1024)|round(1) }} KB</td><td>{{ r.operator }}</td>
+    <td>{{ r.result }}</td>
+    <td>
+      {% if r.result == '成功' %}
+      <form class="inline" method="post" action="{{ url_for('backup_restore', backup_no=r.backup_no) }}"
+            onsubmit="return confirm('恢复会用该备份覆盖当前数据，确认继续？');">
+        <button class="btn small red" type="submit">恢复</button>
+      </form>
+      {% else %}
+      <span class="muted">不可恢复</span>
+      {% endif %}
+    </td>
+  </tr>
+  {% else %}
+  <tr><td colspan="7" class="center muted">还没有备份记录</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

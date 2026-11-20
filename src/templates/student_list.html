@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}学生档案{% endblock %}
+{% block body %}
+<h1>学生档案管理</h1>
+<div class="card">
+  <form method="get" class="row">
+    <div class="field"><label>关键字</label>
+      <input type="text" name="kw" value="{{ kw }}" placeholder="学号或姓名"></div>
+    <div class="field"><label>班级</label>
+      <select name="cls">
+        <option value="">全部</option>
+        {% for c in classes %}
+        <option value="{{ c }}" {% if c == cls %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select></div>
+    <button class="btn" type="submit">查询</button>
+    <a class="btn gray" href="{{ url_for('student_list') }}">重置</a>
+    {% if current_role == '管理员' %}
+    <a class="btn" href="{{ url_for('student_new') }}" style="margin-left:auto;">新增学生</a>
+    {% endif %}
+  </form>
+</div>
+<table>
+  <tr>
+    <th>学号</th><th>姓名</th><th>性别</th><th>出生日期</th><th>班级</th>
+    <th>入学成绩</th><th>联系电话</th><th>操作</th>
+  </tr>
+  {% for r in rows %}
+  <tr>
+    <td>{{ r.student_no }}</td>
+    <td>{{ r.name }}</td>
+    <td>{{ r.sex or '' }}</td>
+    <td>{{ r.birthday or '' }}</td>
+    <td>{{ r.class_name }}</td>
+    <td>{{ r.enroll_total }}</td>
+    <td>{{ r.phone or '' }}</td>
+    <td>
+      <a class="btn small" href="{{ url_for('student_detail', student_no=r.student_no) }}">详情</a>
+      <a class="btn small gray" href="{{ url_for('student_print', student_no=r.student_no) }}" target="_blank">打印</a>
+      {% if current_role == '管理员' %}
+      <a class="btn small gray" href="{{ url_for('student_edit', student_no=r.student_no) }}">编辑</a>
+      <form class="inline" method="post" action="{{ url_for('student_delete', student_no=r.student_no) }}"
+            onsubmit="return confirm('确认删除学生 {{ r.student_no }} 及其全部成绩？');">
+        <button class="btn small red" type="submit">删除</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% else %}
+  <tr><td colspan="8" class="center muted">没有符合条件的学生</td></tr>
+  {% endfor %}
+</table>
+
+{% if current_role == '管理员' %}
+<div class="card" style="margin-top:16px;">
+  <h2 style="margin-top:0;">批量导入档案</h2>
+  <form method="post" action="{{ url_for('student_import') }}">
+    <p class="muted" style="margin-top:0;">每行一条，格式为 学号,姓名,性别,出生日期,班级,入学总分,语文,数学,英语,电话</p>
+    <textarea name="batch" rows="4" placeholder="2410311401,张三,男,2006-01-01,24计科3,600,110,130,120,13800001234"></textarea>
+    <div style="margin-top:8px;"><button class="btn" type="submit">批量导入</button></div>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

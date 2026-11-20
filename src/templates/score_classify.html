@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}分类统计{% endblock %}
+{% block body %}
+<h1>分类统计</h1>
+<div class="card">
+  <strong>{{ course.course_no }} {{ course.course_name }}</strong>
+  <a class="btn gray" href="{{ url_for('score_list', course=course.course_no) }}" style="float:right;">返回</a>
+</div>
+
+<h2>按班级汇总</h2>
+<table>
+  <tr><th>班级</th><th>人数</th><th>平均分</th><th>最高分</th><th>最低分</th><th>及格人数</th><th>及格率</th></tr>
+  {% for r in data.by_class %}
+  <tr>
+    <td>{{ r.class_name }}</td><td>{{ r.cnt }}</td><td>{{ r.avg_score }}</td>
+    <td>{{ r.max_score }}</td><td>{{ r.min_score }}</td><td>{{ r.pass_cnt }}</td>
+    <td>{{ (r.pass_cnt / r.cnt * 100)|round(1) }}%</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="7" class="center muted">没有数据</td></tr>
+  {% endfor %}
+</table>
+
+{% if data.distribution %}
+<h2>分数段分布</h2>
+{% set d = data.distribution %}
+{% set total = (d.seg90 or 0) + (d.seg80 or 0) + (d.seg70 or 0) + (d.seg60 or 0) + (d.segFail or 0) %}
+<table>
+  <tr><th>分数段</th><th>人数</th><th>占比</th></tr>
+  <tr><td>90 分及以上</td><td>{{ d.seg90 or 0 }}</td>
+      <td>{{ ((d.seg90 or 0) / total * 100)|round(1) if total else 0 }}%</td></tr>
+  <tr><td>80 到 89</td><td>{{ d.seg80 or 0 }}</td>
+      <td>{{ ((d.seg80 or 0) / total * 100)|round(1) if total else 0 }}%</td></tr>
+  <tr><td>70 到 79</td><td>{{ d.seg70 or 0 }}</td>
+      <td>{{ ((d.seg70 or 0) / total * 100)|round(1) if total else 0 }}%</td></tr>
+  <tr><td>60 到 69</td><td>{{ d.seg60 or 0 }}</td>
+      <td>{{ ((d.seg60 or 0) / total * 100)|round(1) if total else 0 }}%</td></tr>
+  <tr><td>60 分以下</td><td>{{ d.segFail or 0 }}</td>
+      <td>{{ ((d.segFail or 0) / total * 100)|round(1) if total else 0 }}%</td></tr>
+</table>
+{% endif %}
+{% endblock %}

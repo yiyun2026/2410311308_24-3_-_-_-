@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}综合查询统计{% endblock %}
+{% block body %}
+<h1>综合查询与统计</h1>
+<h2>按课程汇总</h2>
+<table>
+  <tr><th>课程号</th><th>课程名称</th><th>人数</th><th>平均分</th><th>最高分</th><th>最低分</th><th>及格人数</th><th>操作</th></tr>
+  {% for r in by_course %}
+  <tr>
+    <td>{{ r.course_no }}</td><td>{{ r.course_name }}</td><td>{{ r.cnt }}</td>
+    <td>{{ r.avg_score or '' }}</td><td>{{ r.max_score or '' }}</td><td>{{ r.min_score or '' }}</td>
+    <td>{{ r.pass_cnt or 0 }}</td>
+    <td><a class="btn small" href="{{ url_for('score_report_course', course_no=r.course_no) }}">明细</a></td>
+  </tr>
+  {% else %}
+  <tr><td colspan="8" class="center muted">没有课程数据</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}
